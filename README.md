@@ -11,6 +11,7 @@ Ausgabe: Zeitverschiebung, Datum/Uhrzeit in der Zielstadt und
 
 Reale Beispiele:
 
+```
 >> python zeitzonen.py zypern
   (gefunden via Geocoding: Κύπρος, Κύπρος - Kıbrıs)
 
@@ -36,8 +37,9 @@ Reale Beispiele:
   15:00         16:00 Sa              normale Arbeitszeit
   16:00         17:00 Sa              Randzeit
   17:00         18:00 Sa              Randzeit
+```
 
-
+```
   >> python zeitzonen.py 'Gran Canaria' 6.11.2026
   (gefunden via Geocoding: Gran Canaria, Canarias, España)
 
@@ -63,3 +65,4 @@ Reale Beispiele:
   15:00         14:00 Fr              normale Arbeitszeit
   16:00         15:00 Fr              normale Arbeitszeit
   17:00         16:00 Fr              normale Arbeitszeit
+```
