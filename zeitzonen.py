@@ -120,9 +120,27 @@ def offset_text(delta: timedelta) -> str:
     return f"{vorz}{h}:{m:02d} h"
 
 
+def utc_text(dt: datetime) -> str:
+    minuten = int(dt.utcoffset().total_seconds() // 60)
+    vorz = "+" if minuten >= 0 else "-"
+    h, m = divmod(abs(minuten), 60)
+    return f"UTC{vorz}{h}" + (f":{m:02d}" if m else "")
+
+
+def zonen_label(dt: datetime) -> str:
+    name = dt.tzname() or ""
+    utc = utc_text(dt)
+    # Zonen ohne Abkürzung (z. B. Argentinien liefert nur "-03")
+    if not name or name[0] in "+-":
+        return utc
+    return f"{name}, {utc}"
+
+"""
 def fmt(dt: datetime) -> str:
     return f"{WOCHENTAGE[dt.weekday()]}, {dt:%d.%m.%Y %H:%M} ({dt.tzname()})"
-
+"""
+def fmt(dt: datetime) -> str:
+    return f"{WOCHENTAGE[dt.weekday()]}, {dt:%d.%m.%Y %H:%M} ({zonen_label(dt)})"
 
 def tagesmarker(ziel: datetime, de: datetime) -> str:
     diff = (ziel.date() - de.date()).days
@@ -187,7 +205,8 @@ def auswerten(stadt: str, datum, uhrzeit) -> None:
 
     print("\n  Deutsche Arbeitszeit 09:00–17:00 entspricht vor Ort:")
     print(f"  ► {z_start:%H:%M}{tagesmarker(z_start, de_start)}  bis  "
-          f"{z_ende:%H:%M}{tagesmarker(z_ende, de_ende)}  ({z_start.tzname()})")
+          #f"{z_ende:%H:%M}{tagesmarker(z_ende, de_ende)}  ({z_start.tzname()})")
+          f"{z_ende:%H:%M}{tagesmarker(z_ende, de_ende)}  ({zonen_label(z_start)})")
 
     print("\n  Stundenübersicht:")
     print(f"  {'Deutschland':<14}{stadt.title()[:20]:<22}Einschätzung")
@@ -204,29 +223,6 @@ def auswerten(stadt: str, datum, uhrzeit) -> None:
         print("\n  ⚠ In den nächsten 14 Tagen gibt es eine Zeitumstellung – "
               "die Verschiebung ändert sich!")
     print()
-
-"""
-def main() -> None:
-    if len(sys.argv) > 1:
-        stadt = sys.argv[1]
-        datum = datum_parsen(sys.argv[2] if len(sys.argv) > 2 else "")
-        uhrzeit = zeit_parsen(sys.argv[3] if len(sys.argv) > 3 else "")
-        auswerten(stadt, datum, uhrzeit)
-        return
-
-    print("Zeitverschiebungs-Rechner (Enter ohne Stadt = Beenden)")
-    while True:
-        stadt = input("\nStadt: ").strip()
-        if not stadt:
-            break
-        try:
-            datum = datum_parsen(input("Datum (TT.MM.JJJJ, Enter = heute): "))
-            uhrzeit = zeit_parsen(input("Uhrzeit in DE (HH:MM, Enter = jetzt): "))
-        except ValueError as e:
-            print(f"✗ {e}")
-            continue
-        auswerten(stadt, datum, uhrzeit)
-"""
 
 def eingabe_zerlegen(text: str):
     """Zerlegt 'Stadt [TT.MM.JJJJ] [HH:MM]' - Datum und Uhrzeit sind optional."""
